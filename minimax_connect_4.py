@@ -218,6 +218,6 @@ def decision(node,K,alpha_beta):
 
 node = Node(board, None, None, None)
 K=7
-alpha_beta = False
+alpha_beta = True
 child = decision(node,K,alpha_beta)
 print(np.flip(child.get_state(),axis=0))
