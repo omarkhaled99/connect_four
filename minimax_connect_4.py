@@ -12,10 +12,16 @@ columns = int(7)
 board = np.zeros((rows,columns))
 
 board = np.flip(board, axis=0)
-board[0][0] = 1
-board[1][0] = -1
-board[0][1] = 1
-# print(board)
+board[0][3] = -1
+board[1][3] = -1
+board[2][3] = -1
+board[0][4] = 1
+board[1][4] = 1
+board[2][4] = 1
+# board[0][0] = -1
+# board[0][3] = -1
+# board[0][5] = -1
+#print(board)
 # unique, counts = np.unique(board, return_counts=True)
 # dictionary = dict(zip(unique, counts))
 # print(dictionary[1])
@@ -110,46 +116,48 @@ def evaluate_state(node):
     ###number of connected fours horizaontally
     for i in range(rows):
         for j in range(columns - 3):
-            if np.sum(node_board[i][j:j + window_size]) == 4:
 
-                human_count += np.sum(heuristics_matrix[i][j:j + window_size])
+            if np.sum(node_board[i][j:j + window_size]) == np.count_nonzero(node_board[i][j:j + window_size]):
+                human_count += np.dot(heuristics_matrix[i][j:j + window_size], node_board[i][j:j + window_size].T)
                 # break
-            elif np.sum(node_board[i][j:j + window_size]) == -4:
-                AI_count +=  np.sum(heuristics_matrix[i][j:j + window_size])
-                # break
+            elif np.sum(node_board[i][j:j + window_size]) == -np.count_nonzero(node_board[i][j:j + window_size]):
+                AI_count -= np.dot(heuristics_matrix[i][j:j + window_size], node_board[i][j:j + window_size].T)
     ### number of connected fours vertically
     for i in range(rows - 4):
         sum_array = np.sum(node_board[i:i + window_size], axis=0)
+        count_array =  np.count_nonzero(node_board[i:i + window_size], axis=0)
         sum_heuristic = np.sum(heuristics_matrix[i:i + window_size], axis=0)
+       # print(node_board[i:i + window_size].T[0])
         for j in range(sum_array.shape[0]):
-            if sum_array[j] == 4:
-                human_count += sum_heuristic[j]
+            if sum_array[j] == count_array[j]:
+                ## we used transpose to get the coloumn
+                human_count += np.dot(node_board[i:i + window_size].T[j], heuristics_matrix[i:i + window_size].T[j].T)
                 # break
-            elif sum_array[j] == -4:
-                AI_count += sum_heuristic[j]
+            elif sum_array[j] == -count_array[j]:
+                AI_count -= np.dot(node_board[i:i + window_size].T[j], heuristics_matrix[i:i + window_size].T[j].T)
                 # break
     ##number of connected fours diagonally
     for r in range(rows - 3):
         for c in range(columns - 3):
-            window = [node_board[r + i][c + i] for i in range(window_size)]
-            if np.sum(window) == 4:
-                human_count += 1
+            window = np.array([node_board[r + i][c + i] for i in range(window_size)])
+            heuristic_window = np.array([heuristics_matrix[r + i][c + i] for i in range(window_size)])
+            if np.sum(window) == np.count_nonzero(window):
+                human_count += np.dot(window,heuristic_window.T)
                 # break
-            elif np.sum(window) == -4:
-                AI_count += 1
+            elif np.sum(window) == -np.count_nonzero(window):
+                AI_count -= np.dot(window, heuristic_window.T)
                 # break
 
     for r in range(rows - 3):
         for c in range(columns - 3):
-            window = [node_board[r + 3 - i][c + i] for i in range(window_size)]
-            heuristic_matrix_window = [heuristics_matrix[r + 3 - i][c + i] for i in range(window_size)]
-            if np.sum(window) == 4:
-                human_count += np.sum(heuristic_matrix_window)
+            window = np.array([node_board[r + 3 - i][c + i] for i in range(window_size)])
+            heuristic_window = np.array([heuristics_matrix[r + 3 - i][c + i] for i in range(window_size)])
+            if np.sum(window) == np.count_nonzero(window):
+                human_count += np.dot(window,heuristic_window.T)
                 # break
-            elif np.sum(window) == -4:
-                AI_count +=  np.sum(heuristic_matrix_window)
+            elif np.sum(window) == -np.count_nonzero(window):
+                AI_count -= np.dot(window, heuristic_window.T)
                 # break
-
 
     return AI_count - human_count
 
@@ -210,6 +218,6 @@ def decision(node,K,alpha_beta):
 
 node = Node(board, None, None, None)
 K=7
-alpha_beta = True
+alpha_beta = False
 child = decision(node,K,alpha_beta)
-print(child.get_state())
+print(np.flip(child.get_state(),axis=0))
