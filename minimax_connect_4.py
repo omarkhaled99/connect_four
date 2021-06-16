@@ -118,6 +118,59 @@ def evaluate_state(node):
                 # break
 
     return AI_count - human_count
+def window_score(window):
+    score =0
+    if np.count_nonzero(window) == np.sum(window):
+        sum = np.sum(window)
+        if sum==4:
+            score += 1000
+        elif sum ==3:
+            score +=500
+        elif sum ==2:
+            score +=100
+        elif sum ==1:
+            score +=50
+    elif np.count_nonzero(window)== -np.sum(window):
+        sum = np.sum(window)
+        if sum == -4:
+            score -= 1000
+        elif sum == -3:
+            score -= 500
+        elif sum == -2:
+            score -= 100
+        elif sum == -1:
+            score -= 50
+    return score
+def evaluate_state_2(node):
+    ###number of connected fours horizaontally
+    window_size = 4
+    score = 0
+    ROW_COUNT = 6
+    COLUMN_COUNT = 7
+    node_board = node.get_state()
+    for i in range(ROW_COUNT):
+        for j in range(COLUMN_COUNT - 3):
+            window = node_board[i][j:j + window_size]
+            score+= window_score(window)
+    ### number of connected fours vertically
+    for c in range(COLUMN_COUNT):
+        col_array = [int(i) for i in list(node_board[:, c])]
+        for r in range(ROW_COUNT - 3):
+            window = col_array[r:r + window_size]
+            score+= window_score(window)
+    # break
+    ##number of connected fours diagonally
+    for r in range(ROW_COUNT - 3):
+        for c in range(COLUMN_COUNT - 3):
+            window = np.array([node_board[r + i][c + i] for i in range(window_size)])
+            score+= window_score(window)
+        # break
+    for r in range(ROW_COUNT - 3):
+        for c in range(COLUMN_COUNT - 3):
+            window = np.array([node_board[r + 3 - i][c + i] for i in range(window_size)])
+            score += window_score(window)
+        # break
+    return score
 
 
 # print(evaluate_state())
@@ -125,7 +178,7 @@ def evaluate_state(node):
 
 def maximize(node,depth, alpha, beta):
     if terminal_test(node) or depth == 0:
-        return None, evaluate_state(node)
+        return None, evaluate_state_2(node)
     max_child = None
     max_utility = float('-inf')
 
@@ -147,7 +200,7 @@ def maximize(node,depth, alpha, beta):
 
 def minimize(node,depth, alpha, beta):
     if terminal_test(node) or depth == 0:
-        return None, evaluate_state(node)
+        return None, evaluate_state_2(node)
     min_child = None
     min_utility = float('inf')
     for child in node.get_children(False):
@@ -155,7 +208,6 @@ def minimize(node,depth, alpha, beta):
 
         if utility < min_utility:
             min_child = child
-
             min_utility = utility
         if alpha is not None and beta is not None:
             if min_utility <= alpha:
@@ -170,6 +222,7 @@ def minimize(node,depth, alpha, beta):
 def decision(node,K,alpha_beta):
     depth =K
     if alpha_beta:
+        print("using alpha beta")
         child, _ = maximize(node, depth,float('-inf'), float('inf'))
     else:
         child, _ = maximize(node, depth, None, None)

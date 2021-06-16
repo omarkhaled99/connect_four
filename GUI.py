@@ -72,7 +72,8 @@ def calculate_score(board):
 			elif np.sum(window) == -4:
 				AI_count += 1
 			# break
-
+	print(AI_count)
+	print(human_count)
 	return AI_count - human_count
 
 
@@ -188,8 +189,8 @@ while not game_over:
 		#
 		# 	print_board(board)
 			node = Node.Node(board[:], None, None, None, None)
-			K = 3
-			alpha_beta = False
+			K = 7
+			alpha_beta = True
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
 			print("AI done")
