@@ -29,10 +29,10 @@ columns = int(7)
 
 def get_positions(node):
     board_state = node.get_state()
-    board_state = np.flip(board_state, axis=0)
+    # board_state = np.flip(board_state, axis=0)
     positions = []
-    for row in range(board_state.shape[0]):
-        for column in range(board_state.shape[1]):
+    for row in range(rows):
+        for column in range(columns):
             if board_state[row][column] == 0 and (row == 0 or board_state[row - 1][column] != 0):
                 positions.append([row, column])
     return positions
@@ -120,26 +120,33 @@ def evaluate_state(node):
     return AI_count - human_count
 def window_score(window):
     score =0
+
+
     if np.count_nonzero(window) == np.sum(window):
         sum = np.sum(window)
         if sum==4:
-            score += 1000
+            score += 100
         elif sum ==3:
-            score +=500
+            score +=20
         elif sum ==2:
-            score +=100
+            score +=10
         elif sum ==1:
-            score +=50
+            score +=5
+
     elif np.count_nonzero(window)== -np.sum(window):
         sum = np.sum(window)
         if sum == -4:
-            score -= 1000
-        elif sum == -3:
-            score -= 500
-        elif sum == -2:
             score -= 100
+        elif sum == -3:
+            score -= 20
+        elif sum == -2:
+            score -= 10
         elif sum == -1:
-            score -= 50
+            score -= 5
+
+    if np.sum(window) == 2 and np.count_nonzero(window == 1) == 3:
+
+        score += 20000
     return score
 def evaluate_state_2(node):
     ###number of connected fours horizaontally
@@ -151,24 +158,24 @@ def evaluate_state_2(node):
     for i in range(ROW_COUNT):
         for j in range(COLUMN_COUNT - 3):
             window = node_board[i][j:j + window_size]
-            score+= window_score(window)
+            score+= window_score(window[:])
     ### number of connected fours vertically
     for c in range(COLUMN_COUNT):
         col_array = [int(i) for i in list(node_board[:, c])]
         for r in range(ROW_COUNT - 3):
             window = col_array[r:r + window_size]
-            score+= window_score(window)
+            score+= window_score(window[:])
     # break
     ##number of connected fours diagonally
     for r in range(ROW_COUNT - 3):
         for c in range(COLUMN_COUNT - 3):
             window = np.array([node_board[r + i][c + i] for i in range(window_size)])
-            score+= window_score(window)
+            score+= window_score(window[:])
         # break
     for r in range(ROW_COUNT - 3):
         for c in range(COLUMN_COUNT - 3):
             window = np.array([node_board[r + 3 - i][c + i] for i in range(window_size)])
-            score += window_score(window)
+            score += window_score(window[:])
         # break
     return score
 
@@ -177,6 +184,7 @@ def evaluate_state_2(node):
 
 
 def maximize(node,depth, alpha, beta):
+
     if terminal_test(node) or depth == 0:
         return None, evaluate_state_2(node)
     max_child = None
@@ -193,12 +201,13 @@ def maximize(node,depth, alpha, beta):
                 break
 
             if max_utility > alpha:
-                beta = max_utility
+                alpha = max_utility
 
     return max_child, max_utility
 
 
 def minimize(node,depth, alpha, beta):
+
     if terminal_test(node) or depth == 0:
         return None, evaluate_state_2(node)
     min_child = None
@@ -213,7 +222,7 @@ def minimize(node,depth, alpha, beta):
             if min_utility <= alpha:
                 break
 
-            if min_utility <= beta:
+            if min_utility < beta:
                 beta = min_utility
 
     return min_child, min_utility
@@ -226,7 +235,7 @@ def decision(node,K,alpha_beta):
         child, _ = maximize(node, depth,float('-inf'), float('inf'))
     else:
         child, _ = maximize(node, depth, None, None)
-
+    print(child.get_state())
     return child
 
 # node = Node(board, None, None, None)

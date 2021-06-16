@@ -188,8 +188,10 @@ while not game_over:
 		# 		game_over = True
 		#
 		# 	print_board(board)
-			node = Node.Node(board[:], None, None, None, None)
-			K = 7
+
+
+			node = Node.Node( np.copy(board), None, None, None, None)
+			K = 5
 			alpha_beta = True
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
@@ -212,7 +214,7 @@ while not game_over:
 
 					pygame.display.update()
 					game_over = True
-					print(board)
+
 
 				turn += 1
 				turn = turn % 2
