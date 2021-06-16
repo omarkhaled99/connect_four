@@ -1,5 +1,5 @@
 import numpy as np
-
+from Node import Node
 rows = int(6)
 columns = int(7)
 ##human --> 1 AI ---> -1
@@ -9,15 +9,15 @@ columns = int(7)
                   # [1,  1,  1, -1, -1, -1, -1],
                   # [1, -1, -1, -1, -1, -1, -1],
                   # [1,  1,  1,  1,  1, -1, 1]])
-board = np.zeros((rows,columns))
-
-board = np.flip(board, axis=0)
-board[0][3] = -1
-board[1][3] = -1
-board[2][3] = -1
-board[0][4] = 1
-board[1][4] = 1
-board[2][4] = 1
+# board = np.zeros((rows,columns))
+#
+# board = np.flip(board, axis=0)
+# board[0][3] = -1
+# board[1][3] = -1
+# board[2][3] = -1
+# board[0][4] = 1
+# board[1][4] = 1
+# board[2][4] = 1
 # board[0][0] = -1
 # board[0][3] = -1
 # board[0][5] = -1
@@ -33,52 +33,10 @@ def get_positions(node):
     positions = []
     for row in range(board_state.shape[0]):
         for column in range(board_state.shape[1]):
-            if board[row][column] == 0 and (row == 0 or board[row - 1][column] != 0):
+            if board_state[row][column] == 0 and (row == 0 or board_state[row - 1][column] != 0):
                 positions.append([row, column])
     return positions
 
-
-class Node:
-    def get_children(self,max):
-        self.max = max
-        children = []
-        positions = get_positions(self)
-        # print(positions)
-        for position in positions:
-            # print(position)
-            new_board = np.copy(self.board)
-            if self.max:
-                new_board[position[0]][position[1]] = -1
-            else:
-                new_board[position[0]][position[1]]= 1
-            child = Node(new_board,self,None,None)
-            children.append(child)
-        return children
-
-    def __init__(self, board, parent, movement, score):
-        # Contains the state of the node, [list of the state of the board at this node]
-        self.f = None
-        self.board = board
-        self.max = None
-        # Contains the node that generated this node
-        self.parent = parent
-        self.movement = movement
-        self.score = score
-
-        if self.board is not None:
-            self.map = ''.join(str(e) for e in self.board)
-
-    def update_score(self, score):
-        self.score = score
-
-    def update_movement(self, movement):
-        self.movement = movement
-
-    def get_state(self):
-        return self.board
-
-    def __lt__(self, other):
-        return self.f < other.f
 
 
 def terminal_test(node):
@@ -197,6 +155,7 @@ def minimize(node,depth, alpha, beta):
 
         if utility < min_utility:
             min_child = child
+
             min_utility = utility
         if alpha is not None and beta is not None:
             if min_utility <= alpha:
@@ -210,14 +169,16 @@ def minimize(node,depth, alpha, beta):
 
 def decision(node,K,alpha_beta):
     depth =K
+    print(node.get_state())
     if alpha_beta:
         child, _ = maximize(node, depth,float('-inf'), float('inf'))
     else:
         child, _ = maximize(node, depth, None, None)
+    print(child.get_state())
     return child
 
-node = Node(board, None, None, None)
-K=7
-alpha_beta = True
-child = decision(node,K,alpha_beta)
-print(np.flip(child.get_state(),axis=0))
+# node = Node(board, None, None, None)
+# K=7
+# alpha_beta = True
+# child = decision(node,K,alpha_beta)
+# print(np.flip(child.get_state(),axis=0))
