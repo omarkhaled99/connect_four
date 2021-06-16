@@ -26,6 +26,55 @@ def game_ended(board):
 	return True if np.count_nonzero(board)==42 else False
 def is_valid_location(board, col):
 	return board[ROW_COUNT-1][col] == 0
+def calculate_score(board):
+	###number of connected fours horizaontally
+	window_size = 4
+	AI_count =0
+	human_count = 0
+	for i in range(ROW_COUNT):
+		for j in range(COLUMN_COUNT - 3):
+			if np.sum(board[i][j:j + window_size]) == 4:
+				human_count += 1
+			# break
+			elif np.sum(board[i][j:j + window_size]) == -4:
+				AI_count += 1
+	### number of connected fours vertically
+	for i in range(ROW_COUNT - 4):
+		sum_array = np.sum(board[i:i + window_size], axis=0)
+
+		for j in range(sum_array.shape[0]):
+			if sum_array[j] == 4:
+				## we used transpose to get the coloumn
+				human_count += 1
+			# break
+			elif sum_array[j] == -4:
+				AI_count += 1
+			# break
+	##number of connected fours diagonally
+	for r in range(ROW_COUNT - 3):
+		for c in range(COLUMN_COUNT - 3):
+			window = np.array([board[r + i][c + i] for i in range(window_size)])
+
+			if np.sum(window) == 4:
+				human_count += 1
+			# break
+			elif np.sum(window) == -4:
+				AI_count += 1
+			# break
+
+	for r in range(ROW_COUNT - 3):
+		for c in range(COLUMN_COUNT - 3):
+			window = np.array([board[r + 3 - i][c + i] for i in range(window_size)])
+
+			if np.sum(window) == 4:
+				human_count += 1
+			# break
+			elif np.sum(window) == -4:
+				AI_count += 1
+			# break
+
+	return AI_count - human_count
+
 
 def get_next_open_row(board, col):
 	for r in range(ROW_COUNT):
@@ -69,7 +118,8 @@ pygame.display.update()
 
 myfont = pygame.font.SysFont("monospace", 75)
 
-turn =  random.randint(PLAYER, AI)
+turn = AI
+#random.randint(PLAYER, AI)
 
 while not game_over:
 
@@ -97,13 +147,18 @@ while not game_over:
 					row = get_next_open_row(board, col)
 					drop_piece(board, row, col, PLAYER_PIECE)
 
+
 				#print(board)
 					if game_ended(board):
-							print("done")
-							label = myfont.render(" done!!", 1, YELLOW)
+							label = None
+							if calculate_score(board) > 0:
+								label = myfont.render(" AI wins!!", 1, YELLOW)
+							else:
+								label = myfont.render(" human wins!!", 1, YELLOW)
 							screen.blit(label, (40,10))
 							pygame.display.update()
 							game_over = True
+							print(board)
 					turn += 1
 					turn = turn % 2
 					# if winning_move(board, PLAYER_PIECE):
@@ -133,8 +188,8 @@ while not game_over:
 		#
 		# 	print_board(board)
 			node = Node.Node(board[:], None, None, None, None)
-			K = 4
-			alpha_beta = True
+			K = 3
+			alpha_beta = False
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
 			print("AI done")
@@ -147,11 +202,16 @@ while not game_over:
 				drop_piece(board, row, child.col, AI_PIECE)
 				draw_board(board)
 				if game_ended(board):
-						print("done")
-						label = myfont.render(" done!!", 1, YELLOW)
-						screen.blit(label, (40,10))
-						pygame.display.update()
-						game_over = True
+					label = None
+					if calculate_score(board) > 0:
+						label = myfont.render(" AI wins!!", 1, YELLOW)
+					else:
+						label = myfont.render(" human wins!!", 1, YELLOW)
+					screen.blit(label, (40,10))
+
+					pygame.display.update()
+					game_over = True
+					print(board)
 
 				turn += 1
 				turn = turn % 2
