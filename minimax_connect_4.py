@@ -169,12 +169,11 @@ def minimize(node,depth, alpha, beta):
 
 def decision(node,K,alpha_beta):
     depth =K
-    print(node.get_state())
     if alpha_beta:
         child, _ = maximize(node, depth,float('-inf'), float('inf'))
     else:
         child, _ = maximize(node, depth, None, None)
-    print(child.get_state())
+
     return child
 
 # node = Node(board, None, None, None)

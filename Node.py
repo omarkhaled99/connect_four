@@ -27,15 +27,16 @@ class Node:
                 new_board[position[0]][position[1]] = -1
             else:
                 new_board[position[0]][position[1]]= 1
-            child = Node(new_board,self,None,None)
+            child = Node(new_board,self,None,None,position[1])
             children.append(child)
         return children
 
-    def __init__(self, board, parent, movement, score):
+    def __init__(self, board, parent, movement, score, col):
         # Contains the state of the node, [list of the state of the board at this node]
         self.f = None
         self.board = board
         self.max = None
+        self.col = col
         # Contains the node that generated this node
         self.parent = parent
         self.movement = movement

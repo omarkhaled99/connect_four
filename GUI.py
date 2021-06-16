@@ -22,6 +22,8 @@ AI_PIECE = -1
 
 WINDOW_LENGTH = 4
 game_over = False
+def game_ended(board):
+	return True if np.count_nonzero(board)==42 else False
 def is_valid_location(board, col):
 	return board[ROW_COUNT-1][col] == 0
 
@@ -67,7 +69,7 @@ pygame.display.update()
 
 myfont = pygame.font.SysFont("monospace", 75)
 
-turn = AI
+turn =  random.randint(PLAYER, AI)
 
 while not game_over:
 
@@ -94,9 +96,16 @@ while not game_over:
 				if is_valid_location(board, col):
 					row = get_next_open_row(board, col)
 					drop_piece(board, row, col, PLAYER_PIECE)
-				turn += 1
-				turn = turn % 2
-				print(turn)
+
+				#print(board)
+					if game_ended(board):
+							print("done")
+							label = myfont.render(" done!!", 1, YELLOW)
+							screen.blit(label, (40,10))
+							pygame.display.update()
+							game_over = True
+					turn += 1
+					turn = turn % 2
 					# if winning_move(board, PLAYER_PIECE):
 					# 	label = myfont.render("Player 1 wins!!", 1, RED)
 					# 	screen.blit(label, (40,10))
@@ -114,30 +123,38 @@ while not game_over:
 		#col = random.randint(0, COLUMN_COUNT-1)
 		#col = pick_best_move(board, AI_PIECE)
 		# col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
-        #
-		# if is_valid_location(board, col):
-		# 	#pygame.time.wait(500)
-		# 	row = get_next_open_row(board, col)
-		# 	drop_piece(board, row, col, AI_PIECE)
-        #
+		#
+
+		#
 		# 	if winning_move(board, AI_PIECE):
 		# 		label = myfont.render("Player 2 wins!!", 1, YELLOW)
 		# 		screen.blit(label, (40,10))
 		# 		game_over = True
-        #
+		#
 		# 	print_board(board)
-			node = Node.Node(board[:], None, None, None)
-			K = 3
+			node = Node.Node(board[:], None, None, None, None)
+			K = 4
 			alpha_beta = True
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
 			print("AI done")
-			board = child.get_state()[:]
-			#print(board)
-			draw_board(board)
+			# board = child.get_state()[:]
 
-			turn += 1
-			turn = turn % 2
+
+			if is_valid_location(board, child.col):
+				#pygame.time.wait(500)
+				row = get_next_open_row(board, child.col)
+				drop_piece(board, row, child.col, AI_PIECE)
+				draw_board(board)
+				if game_ended(board):
+						print("done")
+						label = myfont.render(" done!!", 1, YELLOW)
+						screen.blit(label, (40,10))
+						pygame.display.update()
+						game_over = True
+
+				turn += 1
+				turn = turn % 2
 
 	if game_over:
-		pygame.time.wait(3000)
+		pygame.time.wait(10000)
