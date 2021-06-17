@@ -147,11 +147,11 @@ def maximize(node,depth, alpha, beta):
     max_child = None
     max_utility = float('-inf')
 
-    print(depth)
+
     for child in node.get_children(True):
 
         _, utility = minimize(child,depth - 1, alpha, beta)
-        print(child.get_state())
+
         if utility > max_utility:
             max_child = child
             max_utility = utility
@@ -171,10 +171,11 @@ def minimize(node,depth, alpha, beta):
         return None, evaluate_state(node)
     min_child = None
     min_utility = float('inf')
-    print(depth)
+
     for child in node.get_children(False):
+
         _, utility = maximize(child,depth-1, alpha, beta)
-        print(child.get_state())
+
         if utility < min_utility:
             min_child = child
             min_utility = utility
@@ -198,3 +199,11 @@ def decision(node,K,alpha_beta):
 
     return child
 
+def get_tree(node):
+    root_node = node.parent
+    depth = 0
+    while node.children is not None:
+        print(depth,"\t")
+        for child in node.children:
+            print(child.get_state())
+        depth+=1

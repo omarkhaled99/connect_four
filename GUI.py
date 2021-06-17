@@ -172,6 +172,7 @@ while not game_over:
 			alpha_beta = True
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
+			minimax_connect_4.get_tree(child)
 			print("AI done")
 
 

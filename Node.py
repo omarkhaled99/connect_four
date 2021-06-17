@@ -30,6 +30,7 @@ class Node:
             child = Node(new_board,self,None,None,position[1])
 
             children.append(child)
+        self.children = children
         return children
 
     def __init__(self, board, parent, movement, score, col):
@@ -40,7 +41,7 @@ class Node:
         self.max = None
         self.col = col
         # Contains the node that generated this node
-
+        self.children = None
         self.movement = movement
         self.score = score
 
