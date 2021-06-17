@@ -119,8 +119,7 @@ pygame.display.update()
 
 myfont = pygame.font.SysFont("monospace", 75)
 
-turn = AI
-#random.randint(PLAYER, AI)
+turn = random.randint(PLAYER, AI)
 
 while not game_over:
 
@@ -138,7 +137,7 @@ while not game_over:
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
-			#print(event.pos)
+
 			# Ask for Player 1 Input
 			if turn == PLAYER:
 				posx = event.pos[0]
@@ -149,7 +148,7 @@ while not game_over:
 					drop_piece(board, row, col, PLAYER_PIECE)
 
 
-				#print(board)
+
 					if game_ended(board):
 							label = None
 							if calculate_score(board) > 0:
@@ -162,45 +161,22 @@ while not game_over:
 							print(board)
 					turn += 1
 					turn = turn % 2
-					# if winning_move(board, PLAYER_PIECE):
-					# 	label = myfont.render("Player 1 wins!!", 1, RED)
-					# 	screen.blit(label, (40,10))
-					# 	game_over = True
 
-
-
-					# print_board(board)
-					# draw_board(board)
+					draw_board(board)
 
 
 	# # Ask for Player 2 Input
 	if turn == AI and not game_over:
-
-		#col = random.randint(0, COLUMN_COUNT-1)
-		#col = pick_best_move(board, AI_PIECE)
-		# col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
-		#
-
-		#
-		# 	if winning_move(board, AI_PIECE):
-		# 		label = myfont.render("Player 2 wins!!", 1, YELLOW)
-		# 		screen.blit(label, (40,10))
-		# 		game_over = True
-		#
-		# 	print_board(board)
-
-
 			node = Node.Node( np.copy(board), None, None, None, None)
-			K = 5
+			K = 3
 			alpha_beta = True
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
 			print("AI done")
-			# board = child.get_state()[:]
 
 
 			if is_valid_location(board, child.col):
-				#pygame.time.wait(500)
+
 				row = get_next_open_row(board, child.col)
 				drop_piece(board, row, child.col, AI_PIECE)
 				draw_board(board)

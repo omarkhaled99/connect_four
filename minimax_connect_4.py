@@ -2,34 +2,9 @@ import numpy as np
 from Node import Node
 rows = int(6)
 columns = int(7)
-##human --> 1 AI ---> -1
-#board = np.array([[1,  1,  1,  1, 1,  -1, -1],
-                  # [1,  1,  1,  1, -1,  1, -1],
-                  # [1, -1, -1, -1, -1,  -1, -1],
-                  # [1,  1,  1, -1, -1, -1, -1],
-                  # [1, -1, -1, -1, -1, -1, -1],
-                  # [1,  1,  1,  1,  1, -1, 1]])
-# board = np.zeros((rows,columns))
-#
-# board = np.flip(board, axis=0)
-# board[0][3] = -1
-# board[1][3] = -1
-# board[2][3] = -1
-# board[0][4] = 1
-# board[1][4] = 1
-# board[2][4] = 1
-# board[0][0] = -1
-# board[0][3] = -1
-# board[0][5] = -1
-#print(board)
-# unique, counts = np.unique(board, return_counts=True)
-# dictionary = dict(zip(unique, counts))
-# print(dictionary[1])
-
 
 def get_positions(node):
     board_state = node.get_state()
-    # board_state = np.flip(board_state, axis=0)
     positions = []
     for row in range(rows):
         for column in range(columns):
@@ -43,21 +18,6 @@ def terminal_test(node):
     node_board = node.get_state()
     return True if np.count_nonzero(node_board) == 42 else False
 
-
-# def evaluate_heuristic(node):
-#     heuristics_matrix = np.array([[3, 4, 5, 7, 5, 4, 3],
-#                                   [4, 6, 8, 10, 8, 6, 4],
-#                                   [5, 8, 11, 13, 11, 8, 5],
-#                                   [5, 8, 11, 13, 11, 8, 5],
-#                                   [4, 6, 8, 10, 8, 6, 4],
-#                                   [3, 4, 5, 7, 5, 4, 3]])
-#     # print(heuristics_matrix.shape)
-#     positions = np.array(get_positions(node))
-#     positions_trans = positions.T
-#     # print(positions)
-#     positions_values = heuristics_matrix[positions_trans[0], positions_trans[1]]
-#     node.update_score(positions_values[np.argmax(positions_values)])
-#     return positions_values[np.argmax(positions_values)]
 
 
 def evaluate_state(node):
@@ -180,9 +140,6 @@ def evaluate_state_2(node):
     return score
 
 
-# print(evaluate_state())
-
-
 def maximize(node,depth, alpha, beta):
 
     if terminal_test(node) or depth == 0:
@@ -190,9 +147,11 @@ def maximize(node,depth, alpha, beta):
     max_child = None
     max_utility = float('-inf')
 
+    print(depth)
     for child in node.get_children(True):
-        _, utility = minimize(child,depth - 1, alpha, beta)
 
+        _, utility = minimize(child,depth - 1, alpha, beta)
+        print(child.get_state())
         if utility > max_utility:
             max_child = child
             max_utility = utility
@@ -212,9 +171,10 @@ def minimize(node,depth, alpha, beta):
         return None, evaluate_state(node)
     min_child = None
     min_utility = float('inf')
+    print(depth)
     for child in node.get_children(False):
         _, utility = maximize(child,depth-1, alpha, beta)
-
+        print(child.get_state())
         if utility < min_utility:
             min_child = child
             min_utility = utility
@@ -235,11 +195,6 @@ def decision(node,K,alpha_beta):
         child, _ = maximize(node, depth,float('-inf'), float('inf'))
     else:
         child, _ = maximize(node, depth, None, None)
-    print(child.get_state())
+
     return child
 
-# node = Node(board, None, None, None)
-# K=7
-# alpha_beta = True
-# child = decision(node,K,alpha_beta)
-# print(np.flip(child.get_state(),axis=0))
