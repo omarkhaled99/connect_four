@@ -168,8 +168,8 @@ while not game_over:
 	# # Ask for Player 2 Input
 	if turn == AI and not game_over:
 			node = Node.Node( np.copy(board), None, None, None, None)
-			K = 3
-			alpha_beta = True
+			K = 5
+			alpha_beta = False
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
 			minimax_connect_4.get_tree(child)

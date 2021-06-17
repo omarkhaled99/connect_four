@@ -1,5 +1,6 @@
 import numpy as np
 from Node import Node
+import time
 rows = int(6)
 columns = int(7)
 
@@ -190,13 +191,14 @@ def minimize(node,depth, alpha, beta):
 
 
 def decision(node,K,alpha_beta):
+    start_time = time.time()
     depth =K
     if alpha_beta:
         print("using alpha beta")
         child, _ = maximize(node, depth,float('-inf'), float('inf'))
     else:
         child, _ = maximize(node, depth, None, None)
-
+    print("--- %s seconds ---" % (time.time() - start_time))
     return child
 
 
