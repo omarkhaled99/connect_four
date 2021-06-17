@@ -199,11 +199,30 @@ def decision(node,K,alpha_beta):
 
     return child
 
+
+
+visited = []
+queue = []
+
 def get_tree(node):
-    root_node = node.parent
+
+    visited.append(node)
+    queue.append([node,0])
     depth = 0
-    while node.children is not None:
+    while queue:
+        s , depth = queue.pop(0) 
+        print(s.get_state())
         print(depth,"\t")
+
         for child in node.children:
-            print(child.get_state())
-        depth+=1
+            if child not in visited:
+                visited.append(child)
+                queue.append([child,depth+1])
+
+    # root_node = node.parent
+    # depth = 0
+    # while node.children is not None:
+    #     print(depth,"\t")
+    #     for child in node.children:
+    #         print(child.get_state())
+    #     depth+=1 
