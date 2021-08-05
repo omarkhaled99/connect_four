@@ -72,8 +72,8 @@ def calculate_score(board):
 			elif np.sum(window) == -4:
 				AI_count += 1
 			# break
-	print(AI_count)
-	print(human_count)
+	print("AI score: ",AI_count)
+	print("Human score: ",human_count)
 	return AI_count - human_count
 
 
@@ -168,11 +168,11 @@ while not game_over:
 	# # Ask for Player 2 Input
 	if turn == AI and not game_over:
 			node = Node.Node( np.copy(board), None, None, None, None)
-			K = 5
-			alpha_beta = False
+			K = 3
+			alpha_beta = True
 			print("AI working")
 			child = minimax_connect_4.decision(node, K, alpha_beta)
-			minimax_connect_4.get_tree(child)
+			# minimax_connect_4.get_tree(child)
 			print("AI done")
 
 

@@ -144,6 +144,8 @@ def evaluate_state_2(node):
 def maximize(node,depth, alpha, beta):
 
     if terminal_test(node) or depth == 0:
+        # print(evaluate_state(node))
+        # print(node.get_state())
         return None, evaluate_state(node)
     max_child = None
     max_utility = float('-inf')
@@ -169,6 +171,8 @@ def maximize(node,depth, alpha, beta):
 def minimize(node,depth, alpha, beta):
 
     if terminal_test(node) or depth == 0:
+        # print(evaluate_state(node))
+        # print(node.get_state())
         return None, evaluate_state(node)
     min_child = None
     min_utility = float('inf')
